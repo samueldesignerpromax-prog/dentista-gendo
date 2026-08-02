@@ -12,13 +12,11 @@ export default function Form({ suggestedTreatment }) {
   const [success, setSuccess] = useState(false);
   const [appointments, setAppointments] = useState([]);
 
-  // Carregar agendamentos salvos
   useEffect(() => {
     const saved = localStorage.getItem('appointments');
     if (saved) setAppointments(JSON.parse(saved));
   }, []);
 
-  // Atualizar quando sugestão mudar
   useEffect(() => {
     if (suggestedTreatment) {
       setForm(prev => ({
@@ -46,7 +44,6 @@ export default function Form({ suggestedTreatment }) {
     localStorage.setItem('appointments', JSON.stringify(updated));
     setSuccess(true);
     setTimeout(() => setSuccess(false), 4000);
-    // Limpar formulário (exceto tratamento/valor)
     setForm(prev => ({
       ...prev,
       name: '',
@@ -62,7 +59,6 @@ export default function Form({ suggestedTreatment }) {
     localStorage.setItem('appointments', JSON.stringify(filtered));
   };
 
-  // Preços fixos para demonstração
   const treatments = [
     { label: 'Limpeza Profissional', price: 120 },
     { label: 'Clareamento a Laser', price: 450 },
@@ -71,28 +67,40 @@ export default function Form({ suggestedTreatment }) {
     { label: 'Consulta + Avaliação', price: 150 },
   ];
 
+  // Atualiza o preço quando o tratamento muda
+  const handleTreatmentChange = (e) => {
+    const selected = e.target.value;
+    const found = treatments.find(t => t.label === selected);
+    setForm(prev => ({
+      ...prev,
+      treatment: selected,
+      price: found ? found.price : '',
+    }));
+  };
+
   return (
-    <div>
+    <div className="form-card">
+      <div className="form-title">📋 Agendar Consulta</div>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Nome completo *</label>
-          <input type="text" name="name" value={form.name} onChange={handleChange} required />
+          <label>Nome completo <span className="required">*</span></label>
+          <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Ex: Ana Silva" required />
         </div>
         <div className="form-group">
           <label>Telefone</label>
-          <input type="tel" name="phone" value={form.phone} onChange={handleChange} />
+          <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="(11) 99999-9999" />
         </div>
         <div className="form-group">
-          <label>Data *</label>
+          <label>Data <span className="required">*</span></label>
           <input type="date" name="date" value={form.date} onChange={handleChange} required />
         </div>
         <div className="form-group">
-          <label>Horário *</label>
+          <label>Horário <span className="required">*</span></label>
           <input type="time" name="time" value={form.time} onChange={handleChange} required />
         </div>
         <div className="form-group">
-          <label>Tratamento *</label>
-          <select name="treatment" value={form.treatment} onChange={handleChange} required>
+          <label>Tratamento <span className="required">*</span></label>
+          <select name="treatment" value={form.treatment} onChange={handleTreatmentChange} required>
             <option value="">Selecione</option>
             {treatments.map((t, i) => (
               <option key={i} value={t.label}>{t.label} – R$ {t.price.toFixed(2)}</option>
@@ -101,17 +109,17 @@ export default function Form({ suggestedTreatment }) {
         </div>
         <div className="form-group">
           <label>Valor (R$)</label>
-          <input type="number" step="0.01" name="price" value={form.price} onChange={handleChange} readOnly />
+          <input type="number" step="0.01" name="price" value={form.price} readOnly style={{ background: '#f0f6fa' }} />
         </div>
-        <button type="submit" className="btn">Agendar</button>
+        <button type="submit" className="btn-primary">✓ Agendar</button>
       </form>
 
-      {success && <div className="success">✅ Agendamento realizado com sucesso!</div>}
+      {success && <div className="success">✅ Agendamento confirmado com sucesso!</div>}
 
       <div className="appointments-list">
         <h3>📋 Meus Agendamentos</h3>
         {appointments.length === 0 ? (
-          <p style={{ color: '#4a6a7f', fontSize: '14px' }}>Nenhum agendamento ainda.</p>
+          <p style={{ color: '#4a6a7f', fontSize: '14px', padding: '8px 0' }}>Nenhum agendamento ainda.</p>
         ) : (
           appointments.map(app => (
             <div key={app.id} className="appointment-item">
