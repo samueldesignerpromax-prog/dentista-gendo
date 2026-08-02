@@ -11,8 +11,17 @@ export default function Home() {
 
   return (
     <div className="container">
-      <h1>🦷 Clínica Dental</h1>
-      <p className="subtitle">Agende sua consulta de forma rápida e inteligente</p>
+      {/* Ícones flutuantes decorativos */}
+      <div className="floating-icon">🦷</div>
+      <div className="floating-icon">✨</div>
+
+      <div className="header">
+        <h1>
+          🦷 Clínica <span>Dental</span>
+        </h1>
+        <span className="badge">Agende online</span>
+      </div>
+      <p className="subtitle">Cuide do seu sorriso com agendamento rápido e assistente inteligente</p>
 
       <div className="grid">
         <div>
